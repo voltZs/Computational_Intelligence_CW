@@ -1,6 +1,8 @@
 package coursework;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 import model.Fitness;
 import model.Individual;
@@ -42,11 +44,11 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 			 */
 
 			// Select 2 Individuals from the current population. Currently returns random Individual
-			Individual parent1 = select(); 
-			Individual parent2 = select();
+			Individual parent1 = select(Parameters.tournamentSize); 
+			Individual parent2 = select(Parameters.tournamentSize);
 
-			// Generate a child by crossover. Not Implemented			
-			ArrayList<Individual> children = reproduce(parent1, parent2);			
+			// Generate a child by crossover. - third parameter is number of crossover points
+			ArrayList<Individual> children = reproduce(parent1, parent2, Parameters.crossoverPoints);		
 			
 			//mutate the offspring
 			mutate(children);
@@ -120,23 +122,78 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	 * NEEDS REPLACED with proper selection this just returns a copy of a random
 	 * member of the population
 	 */
-	private Individual select() {		
-		Individual parent = population.get(Parameters.random.nextInt(Parameters.popSize));
-		return parent.copy();
+	private Individual select(int tournamentSize) {		
+		ArrayList<Individual> contestants = new ArrayList<>();
+		while (contestants.size() < tournamentSize){
+			Individual individual = null;
+			do { 
+				individual = population.get(Parameters.random.nextInt(Parameters.popSize));
+			} while (contestants.contains(individual));
+			contestants.add(individual);
+		}
+		
+		double bestFitness = Double.MAX_VALUE;
+		Individual bestContestant = contestants.get(0);
+		for (Individual contestant : contestants){
+			if(contestant.fitness < bestFitness){
+				bestFitness = contestant.fitness;
+				bestContestant = contestant;
+			}
+		}
+		
+		return bestContestant.copy();
 	}
+	
+	
 
 	/**
 	 * Crossover / Reproduction
 	 * 
-	 * NEEDS REPLACED with proper method this code just returns exact copies of the
-	 * parents. 
+	 * the crossoverAmount is the number of generated crossover points. at every crossover point the dominant and submissive parent swap for a child. 
+	 * Two opposite children are produced
 	 */
-	private ArrayList<Individual> reproduce(Individual parent1, Individual parent2) {
+	private ArrayList<Individual> reproduce(Individual parentA, Individual parentB, Integer crossoverAmount) {
 		ArrayList<Individual> children = new ArrayList<>();
-		children.add(parent1.copy());
-		children.add(parent2.copy());		
+		children.add(parentA.copy());
+		children.add(parentB.copy());
+		
+		Individual[] parents = {parentA, parentB};
+		int chromosomeLength = parentA.chromosome.length;
+		
+		ArrayList<Integer> crossoverPoints = new ArrayList<>();
+		Random rand = new Random();
+		while (crossoverPoints.size() < crossoverAmount){
+			Integer newPoint = 0;
+			do {
+				newPoint = rand.nextInt(chromosomeLength-1)+1; //+1 to avoid getting a zero and -1 as a result (to avoid an out of bounds exception)
+			} while (crossoverPoints.contains(newPoint));
+			crossoverPoints.add(newPoint);
+		}
+		Collections.sort(crossoverPoints);
+
+		int dominant = 0;
+		int submissive = 1;
+		
+		for(int i=0; i<chromosomeLength; i++){
+			if(crossoverPoints.contains(i)){
+				int temp = dominant;
+				dominant = submissive;
+				submissive = temp;
+			}
+			children.get(0).chromosome[i] = parents[dominant].chromosome[i];
+			children.get(1).chromosome[i] = parents[submissive].chromosome[i];
+		}
+		
 		return children;
 	} 
+	
+//	private void printChromosome(double[] chromosome){
+//		for(int i=0; i< chromosome.length; i++){
+//			System.out.print(chromosome[i] + " ");
+//		}
+//		System.out.println();
+//	}
+	
 	
 	/**
 	 * Mutation
@@ -166,7 +223,12 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	private void replace(ArrayList<Individual> individuals) {
 		for(Individual individual : individuals) {
 			int idx = getWorstIndex();		
-			population.set(idx, individual);
+			
+			//make sure the individual getting replaced is worse than the offspring? - fitness is better when it's lower
+			if(population.get(idx).fitness > individual.fitness){
+			
+				population.set(idx, individual);
+			}
 		}		
 	}
 
