@@ -17,7 +17,12 @@ import model.NeuralNetwork;
  */
 public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	
-
+	static final int ONE_POINT_CROSSOVER = 1;
+	static final int TWO_POINT_CROSSOVER = 2;
+	static final int RANDOM_CROSSOVER = -1;
+	static final int EXTREME_RANDOM_CROSSOVER = -2;
+	static final int OTHER_CROSSOVER = -3;
+	
 	/**
 	 * The Main Evolutionary Loop
 	 */
@@ -119,8 +124,6 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	/**
 	 * Selection --
 	 * 
-	 * NEEDS REPLACED with proper selection this just returns a copy of a random
-	 * member of the population
 	 */
 	private Individual select(int tournamentSize) {		
 		ArrayList<Individual> contestants = new ArrayList<>();
@@ -145,7 +148,6 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	}
 	
 	
-
 	/**
 	 * Crossover / Reproduction
 	 * 
@@ -153,15 +155,29 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	 * Two opposite children are produced
 	 */
 	private ArrayList<Individual> reproduce(Individual parentA, Individual parentB, Integer crossoverAmount) {
+		switch(crossoverAmount){
+		case OTHER_CROSSOVER:
+			return null;
+		default: 
+			return nPointCrossover(parentA,parentB, crossoverAmount);
+		}
+	}
+	private ArrayList<Individual> nPointCrossover(Individual parentA, Individual parentB, Integer crossoverAmount) {
 		ArrayList<Individual> children = new ArrayList<>();
 		children.add(parentA.copy());
 		children.add(parentB.copy());
 		
 		Individual[] parents = {parentA, parentB};
 		int chromosomeLength = parentA.chromosome.length;
-		
 		ArrayList<Integer> crossoverPoints = new ArrayList<>();
 		Random rand = new Random();
+		
+		if(crossoverAmount == RANDOM_CROSSOVER){
+			crossoverAmount = rand.nextInt(chromosomeLength/3);
+		} else if (crossoverAmount == EXTREME_RANDOM_CROSSOVER){
+			crossoverAmount = rand.nextInt(chromosomeLength-1);
+		}
+		
 		while (crossoverPoints.size() < crossoverAmount){
 			Integer newPoint = 0;
 			do {
@@ -217,7 +233,6 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	/**
 	 * 
 	 * Replaces the worst member of the population 
-	 * (regardless of fitness)
 	 * 
 	 */
 	private void replace(ArrayList<Individual> individuals) {

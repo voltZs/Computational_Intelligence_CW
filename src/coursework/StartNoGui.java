@@ -1,5 +1,10 @@
 package coursework;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+
 import model.Fitness;
 import model.LunarParameters.DataSet;
 import model.NeuralNetwork;
@@ -18,41 +23,49 @@ public class StartNoGui {
 		 * 
 		 */
 
-		/*
-		 * Set the parameters here or directly in the Parameters Class.
-		 * Note you should use a maximum of 20,0000 evaluations for your experiments 
-		 */
-		Parameters.maxEvaluations = 10000; // Used to terminate the EA after this many generations
-
 		//number of hidden nodes in the neural network
 		Parameters.setHidden(5);
 		
-		//Set the data set for training 
-		Parameters.setDataSet(DataSet.Training);
+		int repetitions = 5;
+		double bestFitness = Double.MAX_VALUE;
+		ArrayList<Double> results = new ArrayList<>();
+		String resultStr = "";
+		resultStr+= "RESULTS:\r\n";
+		for(int i=0; i<repetitions; i++){
+			Parameters.setDataSet(DataSet.Training);
+			NeuralNetwork nn = new MultiVerseOptimisation();		
+			nn.run();
+			
+			Parameters.setDataSet(DataSet.Test);
+			double fitness = Fitness.evaluate(nn);
+			System.out.println( "Round "+ i + ": Fitness on " + Parameters.getDataSet() + " " + fitness);
+			results.add(fitness);
+			resultStr += i + ": " + fitness + "\r\n";
+			if(fitness < bestFitness) bestFitness = fitness;
+		}
+		resultStr += "\r\n";
+		double meanFitness = getAverage(results);
+		resultStr += "Mean fitness: " + meanFitness + "\r\n";
+		double medianFitness = getMedian(results);
+		resultStr += "Median fitness: " + medianFitness + "\r\n";
+		resultStr += "Best fitness: " + bestFitness + "\r\n";
+		writeResultsToFile("results.txt", resultStr, true);
+
+		
+//		/* Print out the best weights found
+//		 * (these will have been saved to disk in the project default directory) 
+//		 */
+//		System.out.println(nn.best);
+//		
+//		/**
+//		 * We now need to test the trained network on the unseen test Set
+//		 */
+//		Parameters.setDataSet(DataSet.Test);
+//		double fitness = Fitness.evaluate(nn);
+//		System.out.println("Fitness on " + Parameters.getDataSet() + " " + fitness);
 		
 		
-		//Create a new Neural Network Trainer Using the above parameters 
-		NeuralNetwork nn = new ExampleEvolutionaryAlgorithm();		
-		
-		//train the neural net (Go and make a coffee) 
-		nn.run();
-		
-		/* Print out the best weights found
-		 * (these will have been saved to disk in the project default directory) 
-		 */
-		System.out.println(nn.best);
-		
-		
-		
-		
-		/**
-		 * We now need to test the trained network on the unseen test Set
-		 */
-		Parameters.setDataSet(DataSet.Test);
-		double fitness = Fitness.evaluate(nn);
-		System.out.println("Fitness on " + Parameters.getDataSet() + " " + fitness);
-		
-		
+
 		/**
 		 * Or We can reload the NN from the file generated during training and test it on a data set 
 		 * We can supply a filename or null to open a file dialog 
@@ -68,8 +81,43 @@ public class StartNoGui {
 //		Parameters.setDataSet(DataSet.Random);
 //		double fitness2 = Fitness.evaluate(nn2);
 //		System.out.println("Fitness on " + Parameters.getDataSet() + " " + fitness2);
-		
-		
-		
+
+	}
+	
+	private static double getAverage(ArrayList<Double> values){
+		double sum = 0;
+		for(int i=0; i<values.size(); i++){
+			sum += values.get(i);
+		}
+		return sum/values.size();
+	}
+	
+	private static double getMedian(ArrayList<Double> values){
+		ArrayList<Double> sorted = values;
+		Collections.sort(sorted);
+		if(values.size()%2 == 0){
+			int midR = values.size()/2;
+			System.out.println(midR);
+			System.out.println(values.get(midR));
+			int midL = midR-1;
+			System.out.println(midL);
+			System.out.println(values.get(midL));
+			return (values.get(midL)+values.get(midR))/2;
+		} else {
+			int mid = (values.size()/2);
+			return values.get(mid);
+		}
+	}
+	
+	private static void writeResultsToFile(String fileName, String string, boolean append) {
+		try {
+			FileWriter fw = new FileWriter(fileName, append);
+			fw.write(string);
+			fw.close();
+		} catch (IOException e) {
+			//e.printStackTrace();
+			System.err.print("\r\n" + e.getMessage() + "\r\n");			
+			System.exit(-1);
+		}
 	}
 }

@@ -8,36 +8,45 @@ import model.LunarParameters.DataSet;
 
 public class Parameters {
  
-	/**
-	 * These parameter values can be changed 
-	 * You may add other Parameters as required to this class 
-	 * 
-	 */
+
 	private static int numHidden = 5;	
 	private static int numGenes = calculateNumGenes();
-	public static double minGene = -2; // specifies minimum and maximum weight values 
-	public static double maxGene = +2;
 	
+	/**
+	 * Normal Parameters
+	 * 
+	 */
+	public static double minGene = -3; // specifies minimum and maximum weight values 
+	public static double maxGene = +3;
 	//The number of randomly selected individuals to use for the selection tournament 
-	public static int tournamentSize = 100;
+	public static int tournamentSize = 5;
 	// The number of crossover points to use for reproduction 
-	public static int crossoverPoints = 1;
-		
-	public static int popSize = 800;
-	public static int maxEvaluations = 5000;
+	public static int crossoverPoints = 2;
+	
+	public static int popSize = 10;
+	public static int maxEvaluations = 20000;
 	
 	// Parameters for mutation 
 	// Rate = probability of changing a gene
 	// Change = the maximum +/- adjustment to the gene value
-	public static double mutateRate = 0.05; // mutation rate for mutation operator
-	public static double mutateChange = 0.9; // delta change for mutation operator
+	public static double mutateRate = 0.3; // mutation rate for mutation operator
+	public static double mutateChange = 1.4; // delta change for mutation operator
 	
 	//Random number generator used throughout the application
 	public static long seed = System.currentTimeMillis();
 	public static Random random = new Random(seed);
+	
+	public static double wepMax = 1.0;
+	public static double wepMin = 0.2;
+	public static double expAccuracy = 6;
+	public static double minTravel = 0;
+	public static double maxTravel = 4;
+
+	
+	
 
 	//set the NeuralNetwork class here to use your code from the GUI
-	public static Class neuralNetworkClass = ExampleEvolutionaryAlgorithm.class;
+	public static Class neuralNetworkClass = MultiVerseOptimisation.class;
 	
 	/**
 	 * Do not change any methods that appear below here.
