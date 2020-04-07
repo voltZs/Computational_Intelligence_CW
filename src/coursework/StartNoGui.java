@@ -26,29 +26,41 @@ public class StartNoGui {
 		//number of hidden nodes in the neural network
 		Parameters.setHidden(5);
 		
-		int repetitions = 5;
-		double bestFitness = Double.MAX_VALUE;
-		ArrayList<Double> results = new ArrayList<>();
+		ArrayList<Double> resultsTest = new ArrayList<>();
+		ArrayList<Double> resultsTraining = new ArrayList<>();
+		int repetitions = 20;
+		
+		double bestFitnessTest = Double.MAX_VALUE;
+		double bestFitnessTraining = Double.MAX_VALUE;
+		
 		String resultStr = "";
-		resultStr+= "RESULTS:\r\n";
+		resultStr+= "RESULTS: TRAININGT | TEST \r\n";
 		for(int i=0; i<repetitions; i++){
 			Parameters.setDataSet(DataSet.Training);
-			NeuralNetwork nn = new MultiVerseOptimisation();		
+			NeuralNetwork nn = new QueenBeeEA();		
 			nn.run();
+			double fitnessTraining = Fitness.evaluate(nn);
+			resultsTraining.add(fitnessTraining);
 			
 			Parameters.setDataSet(DataSet.Test);
-			double fitness = Fitness.evaluate(nn);
-			System.out.println( "Round "+ i + ": Fitness on " + Parameters.getDataSet() + " " + fitness);
-			results.add(fitness);
-			resultStr += i + ": " + fitness + "\r\n";
-			if(fitness < bestFitness) bestFitness = fitness;
+			double fitnessTest = Fitness.evaluate(nn);
+			resultsTest.add(fitnessTest);
+			
+			System.out.println( "Round "+ i + ": Fitness on " + Parameters.getDataSet() + " " + fitnessTest);
+			
+			
+			resultStr += fitnessTraining + ", " + fitnessTest + "\r\n";
+			
+			if(fitnessTraining < bestFitnessTraining) bestFitnessTraining = fitnessTraining;
+			if(fitnessTest < bestFitnessTest) bestFitnessTest = fitnessTest;
 		}
 		resultStr += "\r\n";
-		double meanFitness = getAverage(results);
-		resultStr += "Mean fitness: " + meanFitness + "\r\n";
-		double medianFitness = getMedian(results);
-		resultStr += "Median fitness: " + medianFitness + "\r\n";
-		resultStr += "Best fitness: " + bestFitness + "\r\n";
+		double avgTraining = getAverage(resultsTraining);
+		double avgTest = getAverage(resultsTest);
+		resultStr += "Mean: " + avgTraining + ", " + avgTest + "\r\n";
+		resultStr += "SD: " +  getSD(resultsTraining, avgTraining) + ", " + getSD(resultsTest, avgTest) + "\r\n";
+		resultStr += "Median: " +  getMedian(resultsTraining) + ", " +  getMedian(resultsTest) + "\r\n";
+		resultStr += "Best: " + bestFitnessTraining+ ", "+ bestFitnessTest + "\r\n";
 		writeResultsToFile("results.txt", resultStr, true);
 
 		
@@ -107,6 +119,14 @@ public class StartNoGui {
 			int mid = (values.size()/2);
 			return values.get(mid);
 		}
+	}
+	
+	private static double getSD(ArrayList<Double> values, double mean){
+		double sum = 0;
+		for(int i=0; i<values.size(); i++){
+			sum+= Math.pow(values.get(i)-mean, 2);
+		}
+		return Math.sqrt(sum/values.size());
 	}
 	
 	private static void writeResultsToFile(String fileName, String string, boolean append) {

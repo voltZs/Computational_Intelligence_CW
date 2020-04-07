@@ -11,7 +11,7 @@ import model.NeuralNetwork;
 
 public class MultiVerseOptimisation extends NeuralNetwork{
 	
-	ArrayList<Universe> multiverse = null;
+	ArrayList<Individual> multiverse = null;
 	
 	/**
 	 * The Main Evolutionary Loop
@@ -40,8 +40,8 @@ public class MultiVerseOptimisation extends NeuralNetwork{
 	 * Sets the fitness of the individuals passed as parameters (whole population)
 	 * 
 	 */
-	private void evaluateMultiverse(ArrayList<Universe> multiverse) {
-		for (Universe universe : multiverse) {
+	private void evaluateMultiverse(ArrayList<Individual> multiverse) {
+		for (Individual universe : multiverse) {
 			universe.fitness = Fitness.evaluate(universe, this);
 		}
 	}
@@ -50,7 +50,7 @@ public class MultiVerseOptimisation extends NeuralNetwork{
 	 * Returns a copy of the best individual in the population
 	 * 
 	 */
-	private Universe getBest() {
+	private Individual getBest() {
 		return multiverse.get(getBestIndex());
 	}
 	
@@ -59,10 +59,10 @@ public class MultiVerseOptimisation extends NeuralNetwork{
 	 * @return
 	 */
 	private int getBestIndex() {
-		Universe best = null;
+		Individual best = null;
 		int idx = -1;
 		for (int i = 0; i < multiverse.size(); i++) {
-			Universe universe = multiverse.get(i);
+			Individual universe = multiverse.get(i);
 			if (best == null) {
 				best = universe;
 				idx = i;
@@ -74,7 +74,7 @@ public class MultiVerseOptimisation extends NeuralNetwork{
 		return idx;
 	}	
 	
-	private Universe getWorst() {
+	private Individual getWorst() {
 		return multiverse.get(getWorstIndex());
 	}
 	
@@ -83,10 +83,10 @@ public class MultiVerseOptimisation extends NeuralNetwork{
 	 * @return
 	 */
 	private int getWorstIndex() {
-		Universe worst = null;
+		Individual worst = null;
 		int idx = -1;
 		for (int i = 0; i < multiverse.size(); i++) {
-			Universe universe = multiverse.get(i);
+			Individual universe = multiverse.get(i);
 			if (worst == null) {
 				worst = universe;
 				idx = i;
@@ -101,11 +101,11 @@ public class MultiVerseOptimisation extends NeuralNetwork{
 	/**
 	 * Initialise the multiverse
 	 */
-	private ArrayList<Universe> bigBang() {
+	private ArrayList<Individual> bigBang() {
 		multiverse = new ArrayList<>();
 		for (int i = 0; i < Parameters.popSize; ++i) {
 			//chromosome weights are initialised randomly in the constructor
-			Universe universe = new Universe();
+			Individual universe = new Individual();
 			multiverse.add(universe);
 		}
 		evaluateMultiverse(multiverse);
@@ -115,14 +115,15 @@ public class MultiVerseOptimisation extends NeuralNetwork{
 	
 	private void runLightYear(int year){
 		Random rand = new Random();
-		ArrayList<Universe> multiverseCopy = new ArrayList<>();
+		ArrayList<Individual> multiverseCopy = new ArrayList<Individual>();
 		//create a copy of the universe
-		for(Universe universe : multiverse){
-			multiverseCopy.add((Universe) universe.copy());
+		for(Individual universe : multiverse){
+			Individual copy = universe.copy();
+			multiverseCopy.add( copy);
 		}
 		
 		for(int i = 0; i< multiverseCopy.size(); i++){
-			Universe currentUniverse = multiverseCopy.get(i);
+			Individual currentUniverse = (Individual) multiverseCopy.get(i);
 			double inflation = calculateInflation(currentUniverse.fitness);
 			
 			for(int j = 0; j<currentUniverse.chromosome.length; j++){
@@ -169,11 +170,11 @@ public class MultiVerseOptimisation extends NeuralNetwork{
 		double min = getBest().fitness;
 		double max = getWorst().fitness;
 		float totalReverseInflations = 0;
-		for(Universe universe : multiverse){
+		for(Individual universe : multiverse){
 			totalReverseInflations += 1 - (universe.fitness - min)/(max-min);
 		}
 		float testSum = 0;
-		for(Universe universe : multiverse){
+		for(Individual universe : multiverse){
 			float reverseInflation = (float) (1 - (universe.fitness - min)/(max-min));
 			probabilities.add(new RouletteTuple(universe, reverseInflation/totalReverseInflations));
 			testSum += (reverseInflation/totalReverseInflations);
@@ -214,18 +215,17 @@ public class MultiVerseOptimisation extends NeuralNetwork{
 		return Math.tanh(x);
 	}
 
-	private class Universe extends Individual{
-		
-	}
-	
+
 	private class RouletteTuple{
 		float probability;
-		Universe universe;
+		Individual universe;
 		
-		public RouletteTuple(Universe universe, float probability){
+		public RouletteTuple(Individual universe, float probability){
 			this.universe = universe;
 			this.probability = probability;
 		}
 	}
-
 }
+
+
+

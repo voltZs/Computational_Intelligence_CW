@@ -69,8 +69,6 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 			
 			// Implemented in NN class. 
 			outputStats();
-			
-			//Increment number of completed generations			
 		}
 
 		//save the trained network to disk
@@ -83,7 +81,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	 * Sets the fitness of the individuals passed as parameters (whole population)
 	 * 
 	 */
-	private void evaluateIndividuals(ArrayList<Individual> individuals) {
+	public void evaluateIndividuals(ArrayList<Individual> individuals) {
 		for (Individual individual : individuals) {
 			individual.fitness = Fitness.evaluate(individual, this);
 		}
@@ -94,7 +92,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	 * Returns a copy of the best individual in the population
 	 * 
 	 */
-	private Individual getBest() {
+	public Individual getBest() {
 		best = null;;
 		for (Individual individual : population) {
 			if (best == null) {
@@ -110,7 +108,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	 * Generates a randomly initialised population
 	 * 
 	 */
-	private ArrayList<Individual> initialise() {
+	public ArrayList<Individual> initialise() {
 		population = new ArrayList<>();
 		for (int i = 0; i < Parameters.popSize; ++i) {
 			//chromosome weights are initialised randomly in the constructor
@@ -125,7 +123,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	 * Selection --
 	 * 
 	 */
-	private Individual select(int tournamentSize) {		
+	protected Individual select(int tournamentSize) {		
 		ArrayList<Individual> contestants = new ArrayList<>();
 		while (contestants.size() < tournamentSize){
 			Individual individual = null;
@@ -154,7 +152,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	 * the crossoverAmount is the number of generated crossover points. at every crossover point the dominant and submissive parent swap for a child. 
 	 * Two opposite children are produced
 	 */
-	private ArrayList<Individual> reproduce(Individual parentA, Individual parentB, Integer crossoverAmount) {
+	protected ArrayList<Individual> reproduce(Individual parentA, Individual parentB, Integer crossoverAmount) {
 		switch(crossoverAmount){
 		case OTHER_CROSSOVER:
 			return null;
@@ -216,7 +214,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	 * 
 	 * 
 	 */
-	private void mutate(ArrayList<Individual> individuals) {		
+	protected void mutate(ArrayList<Individual> individuals) {		
 		for(Individual individual : individuals) {
 			for (int i = 0; i < individual.chromosome.length; i++) {
 				if (Parameters.random.nextDouble() < Parameters.mutateRate) {
@@ -235,7 +233,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	 * Replaces the worst member of the population 
 	 * 
 	 */
-	private void replace(ArrayList<Individual> individuals) {
+	protected void replace(ArrayList<Individual> individuals) {
 		for(Individual individual : individuals) {
 			int idx = getWorstIndex();		
 			
