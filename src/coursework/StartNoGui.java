@@ -37,7 +37,7 @@ public class StartNoGui {
 		resultStr+= "RESULTS: TRAININGT | TEST \r\n";
 		for(int i=0; i<repetitions; i++){
 			Parameters.setDataSet(DataSet.Training);
-			NeuralNetwork nn = new QueenBeeEA();		
+			NeuralNetwork nn = new MultiVerseOptimisation();		
 			nn.run();
 			double fitnessTraining = Fitness.evaluate(nn);
 			resultsTraining.add(fitnessTraining);

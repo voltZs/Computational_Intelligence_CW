@@ -20,8 +20,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	static final int ONE_POINT_CROSSOVER = 1;
 	static final int TWO_POINT_CROSSOVER = 2;
 	static final int RANDOM_CROSSOVER = -1;
-	static final int EXTREME_RANDOM_CROSSOVER = -2;
-	static final int OTHER_CROSSOVER = -3;
+	static final int UNIFORM_CROSSOVER = -2;
 	
 	/**
 	 * The Main Evolutionary Loop
@@ -153,13 +152,9 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	 * Two opposite children are produced
 	 */
 	protected ArrayList<Individual> reproduce(Individual parentA, Individual parentB, Integer crossoverAmount) {
-		switch(crossoverAmount){
-		case OTHER_CROSSOVER:
-			return null;
-		default: 
-			return nPointCrossover(parentA,parentB, crossoverAmount);
-		}
+		return nPointCrossover(parentA,parentB, crossoverAmount);
 	}
+	
 	private ArrayList<Individual> nPointCrossover(Individual parentA, Individual parentB, Integer crossoverAmount) {
 		ArrayList<Individual> children = new ArrayList<>();
 		children.add(parentA.copy());
@@ -172,7 +167,8 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 		
 		if(crossoverAmount == RANDOM_CROSSOVER){
 			crossoverAmount = rand.nextInt(chromosomeLength/3);
-		} else if (crossoverAmount == EXTREME_RANDOM_CROSSOVER){
+		}
+		if (crossoverAmount == UNIFORM_CROSSOVER){
 			crossoverAmount = rand.nextInt(chromosomeLength-1);
 		}
 		
@@ -184,6 +180,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 			crossoverPoints.add(newPoint);
 		}
 		Collections.sort(crossoverPoints);
+		
 
 		int dominant = 0;
 		int submissive = 1;

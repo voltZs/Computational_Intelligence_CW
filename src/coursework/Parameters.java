@@ -15,7 +15,7 @@ public class Parameters {
 	public static long seed = System.currentTimeMillis();
 	public static Random random = new Random(seed);
 	
-	public static int popSize = 80;
+	public static int popSize = 20;
 	public static int maxEvaluations = 20000;
 	
 	/** Normal Parameters
@@ -25,9 +25,9 @@ public class Parameters {
 	//The number of randomly selected individuals to use for the selection tournament 
 	public static int tournamentSize = 5;
 	// The number of crossover points to use for reproduction 
-	public static int crossoverPoints = 1;
+	public static int crossoverPoints = ExampleEvolutionaryAlgorithm.ONE_POINT_CROSSOVER;
 	public static double mutateRate = 0.4; // mutation rate for mutation operator
-	public static double mutateChange = 0.8; // delta change for mutation operator
+	public static double mutateChange = 1; // delta change for mutation operator
 	
 	/** Queen Bee modification
 	 */
@@ -38,15 +38,15 @@ public class Parameters {
 
 	/** MultiVerseOptimisation Parameters
 	 */
-	public static double wepMax = 1.0;
+	public static double wepMax = 1;
 	public static double wepMin = 0.2;
 	public static double expAccuracy = 6;
-	public static double minTravel = 0;
-	public static double maxTravel = 2;
+	public static double minTravel = 15;
+	public static double maxTravel = 20;
 	
 
 	//set the NeuralNetwork class here to use your code from the GUI
-	public static Class neuralNetworkClass = QueenBeeEA.class;
+	public static Class neuralNetworkClass = MultiVerseOptimisation.class;
 	
 	/**
 	 * Do not change any methods that appear below here.

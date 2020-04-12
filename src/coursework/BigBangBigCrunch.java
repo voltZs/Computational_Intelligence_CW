@@ -43,7 +43,6 @@ public class BigBangBigCrunch extends NeuralNetwork {
 	 * Generate candidates around center of gravity
 	 */
 	private void bigBang(Individual center) {
-		System.out.println(center.chromosome[5] + " 6ths gene");
 		population = new ArrayList<>(); //we want to delete the old solutions
 		Random rand = new Random();
 		for (int i = 0; i < Parameters.popSize; ++i) {
@@ -54,9 +53,9 @@ public class BigBangBigCrunch extends NeuralNetwork {
 				if(evaluations ==0){
 					newCandidate.chromosome[j] = 0;
 				} else {
-//					newCandidate.chromosome[j] = center.chromosome[j] + ((Parameters.maxGene*r)/(evaluations)); //adding +1 to iterations (evaluations) because we start with 0 but this is 'first'
-				float increment = (float) (1 - (Math.pow(evaluations, 1/8) / Math.pow(Parameters.maxEvaluations, 1/8))*Parameters.maxGene/2);
-				newCandidate.chromosome[j] = center.chromosome[j] + increment*r;
+				newCandidate.chromosome[j] = center.chromosome[j] + ((Parameters.maxGene*r)/(evaluations)); //adding +1 to iterations (evaluations) because we start with 0 but this is 'first'
+//				float increment = (float) (1 - (Math.pow(evaluations, 1/8) / Math.pow(Parameters.maxEvaluations, 1/8))*Parameters.maxGene/2);
+//				newCandidate.chromosome[j] = center.chromosome[j] + increment*r;
 				}
 			}
 			newCandidate.fitness = Fitness.evaluate(newCandidate, this);
